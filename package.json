@@ -1,0 +1,30 @@
+{
+  "name": "locale-index-of",
+  "version": "1.0.0",
+  "description": "A prollyfill for String.prototype.localeIndexOf - a locale-aware Intl-powered version of indexOf.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "Intl",
+    "Collator",
+    "locale",
+    "string",
+    "search",
+    "indexOf",
+    "accents",
+    "diacritics",
+    "case-insensitive",
+    "punctuation"
+  ],
+  "author": {
+    "name": "Artemy Tregubenko",
+    "email": "me@arty.name",
+    "url": "https://arty.name"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "tape": "^4.6.2"
+  }
+}

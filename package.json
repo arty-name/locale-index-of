@@ -1,6 +1,6 @@
 {
   "name": "locale-index-of",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A prollyfill for String.prototype.localeIndexOf - a locale-aware Intl-powered version of indexOf.",
   "main": "index.js",
   "scripts": {

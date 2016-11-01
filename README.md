@@ -2,6 +2,8 @@
 
 *Find „cafe“ in „Fondation Café“*
 
+[![Build Status](https://travis-ci.org/arty-name/locale-index-of.svg?branch=master)](https://travis-ci.org/arty-name/locale-index-of)
+
 A prollyfill for `String.prototype.localeIndexOf` - 
 a locale-aware Intl-powered version of `indexOf`.
 

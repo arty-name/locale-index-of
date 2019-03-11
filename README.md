@@ -5,7 +5,7 @@
 [![Build Status](https://travis-ci.org/arty-name/locale-index-of.svg?branch=master)](https://travis-ci.org/arty-name/locale-index-of)
 
 A prollyfill for `String.prototype.localeIndexOf` - 
-a locale-aware Intl-powered version of `indexOf`.
+a locale-aware Intl-powered version of `indexOf` with zero dependencies.
 
 Many texts out there contain accents and other diacritical characters, 
 and when they are not strictly necessary, like in „café“, it is hard 
@@ -17,12 +17,12 @@ User has typed in „cafe“. You smartly find „café“ and display it as
 a suggestion. However you cannot really highlight it as a match, 
 because the string is slightly different. 
 
-`Intl.Comparator` with `sensitivity: base` to the resque! 
+`Intl.Collator` with `sensitivity: base` to the rescue! 
 Except that it only has a `compare()` method, not `indexOf()`. 
 So you can’t use it to find substrings. Well, now you can. 
 `localeIndexOf` can do some grinding for you. It is modeled after 
 `String.prototype.localeCompare` and can be used in a similar fashion. 
-It extends the functionality of `Intl.Comparator.compare()` to search, 
+It extends the functionality of `Intl.Collator.compare()` to search, 
 so you can even set `ignorePunctuation: true`.
 
 
@@ -47,7 +47,7 @@ or alternatively
 
 ### default export `require('locale-index-of')`
 
-The default export of a model is a function. Give it the `Intl` object 
+The default export of the module is a function. Give it the `Intl` object 
 and get the `localeIndexOf` function in return:
 
     var localeIndexOf = require('locale-index-of')(Intl);
@@ -73,8 +73,8 @@ Return value: the offset of `substring`  in the `string` or `-1`.
 ### `prototypeLocaleIndexOf(Intl)`
 
 The module also exports method `prototypeLocaleIndexOf`. Give it 
-the `Intl` object and get the `localeIndexOf` function in return, 
-but suitable for putting on `String.prototype`:
+the `Intl` object and get back the `localeIndexOf` function 
+suitable for putting on `String.prototype`:
 
     String.prototype.localeIndexOf = require('locale-index-of').prototypeLocaleIndexOf(Intl);
 
@@ -104,7 +104,7 @@ Return value: the offset of `substring`  in `this` or `-1` when not found.
 
 ## Note on `ignorePunctuation: true`
 
-The default behavior of `Intl.Collator` is to consider the whitespace punctiation. 
+The default behavior of `Intl.Collator` is to consider the whitespace punctuation. 
 
 Since the length of the matched fragment can be different from the length of
 what you have looked for, this length is exposed on 

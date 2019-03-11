@@ -1,6 +1,6 @@
 {
   "name": "locale-index-of",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A prollyfill for String.prototype.localeIndexOf - a locale-aware Intl-powered version of indexOf.",
   "main": "index.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "url": "https://github.com/arty-name/locale-index-of"
   },
   "license": "ISC",
-  "dependencies": {
-    "tape": "^4.6.2"
+  "devDependencies": {
+    "tape": "^4.10.1"
   }
 }

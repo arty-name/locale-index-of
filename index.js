@@ -68,6 +68,7 @@ exported.noPunctuationIndexOf = function(collator, string, substring, punctuatio
 
   for (index = 0; index < stringLength; index += 1) {
     var potentialMatchLength = consideredSubstringCharacters;
+    updateConsideredCharacterAt(index + potentialMatchLength);
 
     // increase the length of the potential match until any of these
     // a) it contains the same amount of considered characters as the substring
@@ -76,8 +77,8 @@ exported.noPunctuationIndexOf = function(collator, string, substring, punctuatio
       consideredStringCharacters(index, potentialMatchLength) < consideredSubstringCharacters &&
       index + potentialMatchLength <= stringLength
     ) {
-      updateConsideredCharacterAt(index + potentialMatchLength);
       potentialMatchLength += 1;
+      updateConsideredCharacterAt(index + potentialMatchLength);
     }
 
     // now the potential match contains the same amount of considered characters as the substring

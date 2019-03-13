@@ -93,8 +93,9 @@ tape('localeIndexOf', function(t) {
   });
 
   t.test('ignorePunctuation', function(test) {
-    test.plan(4);
+    test.plan(5);
     // the caveat is that whitespace is also considered punctuation
+    test.equal(localeIndexOf('tes', 'e', 'de', { ignorePunctuation: true }), 1, 'string contains punctuation');
     test.equal(localeIndexOf('a mätch, (possibly) true', 'mätchpossibly', 'de', { ignorePunctuation: true }), 1, 'string contains punctuation');
     test.equal(localeIndexOf('a mätchpossibly true', 'mätch possibly!!', 'de', { ignorePunctuation: true }), 1, 'substring contains punctuation');
     test.equal(localeIndexOf('a mätch, (possibly!) true', 'mätch possibly!!', 'de', { ignorePunctuation: true }), 1, 'string and substring contain punctuation');

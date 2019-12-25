@@ -48,7 +48,8 @@ exported.noPunctuationIndexOf = function(collator, string, substring, punctuatio
   // a cache for string characters punctuation values
   var characterIsConsidered = new Array(stringLength);
   function isConsidered(character) {
-    return (punctuationCollator.compare('', character) === 0) ? 0 : 1;
+    // concatenation with 'a' is a workaround for Node issue
+    return (punctuationCollator.compare('a', 'a' + character) === 0) ? 0 : 1;
   }
   function updateConsideredCharacterAt(index) {
     characterIsConsidered[index] = isConsidered(string[index]);

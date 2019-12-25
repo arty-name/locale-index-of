@@ -34,12 +34,22 @@ so you can even set `ignorePunctuation: true`.
 ## Usage
 
     var localeIndexOf = require('locale-index-of')(Intl);
-    localeIndexOf('a café', 'cafe', 'de', { sensitivity: base }); // = 2
+    localeIndexOf('a café', 'cafe', 'de', { sensitivity: 'base' }); // = 2
 
 or alternatively
 
     require('locale-index-of').prollyfill();
-    'a café'.localeIndexOf('cafe', 'de', { sensitivity: base }); // = 2
+    'a café'.localeIndexOf('cafe', 'de', { sensitivity: 'base' }); // = 2
+    
+
+### Node.js support
+
+Please note that “official” Node.js builds from nodejs.org 
+only supported English locate in `Intl` for several major versions
+before version 13. Everything works fine with v13+. If you need that 
+in earlier versions of Node you could try the version in your distribution,
+build Node yourself or check the Node documentation for `Intl` 
+for more options.
 
 
 ## API

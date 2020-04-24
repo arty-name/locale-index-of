@@ -29,6 +29,6 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "tape": "^4.12.1"
+    "tape": "^5.0.0"
   }
 }

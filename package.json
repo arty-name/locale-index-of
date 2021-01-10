@@ -1,8 +1,12 @@
 {
   "name": "locale-index-of",
-  "version": "1.0.8",
+  "version": "2.0.0",
   "description": "A prollyfill for String.prototype.localeIndexOf - a locale-aware Intl-powered version of indexOf.",
   "main": "index.js",
+  "type": "module",
+  "engines": {
+    "node": ">=14"
+  },
   "scripts": {
     "test": "node test.js"
   },
@@ -19,7 +23,7 @@
     "punctuation"
   ],
   "author": {
-    "name": "Artemy Tregubenko",
+    "name": "Tom Adler",
     "email": "me@arty.name",
     "url": "https://arty.name"
   },

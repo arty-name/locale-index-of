@@ -1,52 +1,53 @@
-function exported(Intl) {
+export default function exported(Intl) {
   return function localeIndexOf(string, substring, localesOrCollator, options) {
-    return exported.functional(Intl, string, substring, localesOrCollator, options);
+    return functional(Intl, string, substring, localesOrCollator, options);
   };
 }
 
-exported.prototypeLocaleIndexOf = function(Intl) {
+export function prototypeLocaleIndexOf(Intl) {
   return function prototypeLocaleIndexOf(substring, localesOrCollator, options) {
-    return exported.functional(Intl, this, substring, localesOrCollator, options);
+    return functional(Intl, this, substring, localesOrCollator, options);
   };
-};
+}
 
-exported.prollyfill = function() {
+export function prollyfill() {
   String.prototype.localeIndexOf = (typeof Intl !== 'undefined') ?
-    exported.prototypeLocaleIndexOf(Intl) :
+    prototypeLocaleIndexOf(Intl) :
     String.prototype.indexOf;
-};
+}
 
-exported.functional = function(Intl, string, substring, localesOrCollator, options) {
-  var collator = exported.getCollator(Intl, localesOrCollator, options);
+export function functional(Intl, string, substring, localesOrCollator, options) {
+  const collator = getCollator(Intl, localesOrCollator, options);
 
-  var resolvedOptions = collator.resolvedOptions();
+  const resolvedOptions = collator.resolvedOptions();
   if (resolvedOptions.ignorePunctuation === false) {
-    return exported.indexOf(collator, string, substring);
+    return indexOf(collator, string, substring);
   }
 
-  var punctuationCollator = new Intl.Collator(resolvedOptions.locale, { ignorePunctuation: true });
-  return exported.noPunctuationIndexOf(collator, string, substring, punctuationCollator);
-};
+  const punctuationCollator = new Intl.Collator(resolvedOptions.locale, {ignorePunctuation: true});
+  return noPunctuationIndexOf(collator, string, substring, punctuationCollator);
+}
 
-exported.indexOf = function(collator, string, substring) {
-  var stringLength = string.length;
-  var substringLength = substring.length;
+export function indexOf(collator, string, substring) {
+  const stringLength = string.length;
+  const substringLength = substring.length;
 
-  for (var index = 0; index <= stringLength - substringLength; index += 1) {
-    var potentialMatch = string.substring(index, index + substringLength);
+  for (let index = 0; index <= stringLength - substringLength; index += 1) {
+    const potentialMatch = string.substring(index, index + substringLength);
     if (collator.compare(potentialMatch, substring) === 0) {
       return index;
     }
   }
   return -1;
-};
+}
 
-exported.noPunctuationIndexOf = function(collator, string, substring, punctuationCollator) {
-  var stringLength = string.length;
-  var substringLength = substring.length;
+export function noPunctuationIndexOf(collator, string, substring, punctuationCollator) {
+  const stringLength = string.length;
+  const substringLength = substring.length;
 
   // a cache for string characters punctuation values
-  var characterIsConsidered = new Array(stringLength);
+  const characterIsConsidered = new Array(stringLength);
+
   function isConsidered(character) {
     // concatenation with 'a' is a workaround for Node issue
     return (punctuationCollator.compare('a', 'a' + character) === 0) ? 0 : 1;
@@ -55,11 +56,11 @@ exported.noPunctuationIndexOf = function(collator, string, substring, punctuatio
     characterIsConsidered[index] = isConsidered(string[index]);
   }
   function consideredStringCharacters(start, count) {
-    return exported.sum(characterIsConsidered.slice(start, start + count));
+    return sum(characterIsConsidered.slice(start, start + count));
   }
 
-  var consideredSubstringCharacters = 0;
-  var index;
+  let consideredSubstringCharacters = 0;
+  let index;
 
   // count the punctuation characters in the substring, also prefill the initial portion of the cache
   for (index = 0; index < substringLength; index += 1) {
@@ -68,7 +69,7 @@ exported.noPunctuationIndexOf = function(collator, string, substring, punctuatio
   }
 
   for (index = 0; index < stringLength; index += 1) {
-    var potentialMatchLength = consideredSubstringCharacters;
+    let potentialMatchLength = consideredSubstringCharacters;
     updateConsideredCharacterAt(index + potentialMatchLength);
 
     // increase the length of the potential match until any of these
@@ -84,37 +85,36 @@ exported.noPunctuationIndexOf = function(collator, string, substring, punctuatio
 
     // now the potential match contains the same amount of considered characters as the substring
     // and they can be compared fairly
-    var potentialMatch = string.substring(index, index + potentialMatchLength);
+    const potentialMatch = string.substring(index, index + potentialMatchLength);
     if (collator.compare(potentialMatch, substring) === 0) {
-      exported.noPunctuationIndexOf.lastLength = potentialMatchLength;
+      noPunctuationIndexOf.lastLength = potentialMatchLength;
       return index;
     }
   }
 
   return -1;
-};
+}
 
-exported.sum = function(list) {
+export function sum(list) {
   return list.reduce(function(accumulator, item) {
     return accumulator + item;
   }, 0);
-};
+}
 
-exported.getCollator = function(Intl, localesOrCollator, options) {
+export function getCollator(Intl, localesOrCollator, options) {
   if (localesOrCollator && localesOrCollator instanceof Intl.Collator) {
     return localesOrCollator;
   }
 
-  options = exported.getOptions(options);
+  options = getOptions(options);
   return new Intl.Collator(localesOrCollator, options);
-};
+}
 
-exported.getOptions = function(options) {
+export function getOptions(options) {
   if (!options) {
     options = {};
   }
   options.usage = 'search';
   return options;
-};
+}
 
-module.exports = exported;

@@ -26,6 +26,12 @@ It extends the functionality of `Intl.Collator.compare()` to search,
 so you can even set `ignorePunctuation: true`.
 
 
+## ES modules only
+
+Version 2.0.0 introduces a breaking change: 
+the support for CommonJS is removed, minimal Node.js version becomes 14.
+
+
 ## Installation
 
     npm install locale-index-of

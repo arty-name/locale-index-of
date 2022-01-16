@@ -1,5 +1,5 @@
 import tape from "tape";
-import exported, { noPunctuationIndexOf, prollyfill, prototypeLocaleIndexOf, sum } from "./index.js";
+import exported, { prollyfill, prototypeLocaleIndexOf, indexOf } from "./index.js";
 
 const localeIndexOf = exported(Intl);
 
@@ -14,6 +14,30 @@ tape('localeIndexOf', function(t) {
     test.equal(localeIndexOf('abcä', 'bcä'), 1, 'substring at the end of string');
     test.equal(localeIndexOf('abcä', 'ä'), 3, 'character at the end of string');
     test.equal(localeIndexOf('äbc', 'bd'), -1, 'no match');
+  });
+
+  t.test('decomposed strings', function(test) {
+    test.plan(16);
+
+    test.equal(localeIndexOf('caf\u00e9', 'caf\u0065\u0301'), 0, 'decomposed substring: same strings');
+    test.equal(localeIndexOf('caf\u00e9 x', 'caf\u0065\u0301'), 0, 'decomposed substring: substring at the start of string');
+    test.equal(localeIndexOf('xcaf\u00e9x', 'caf\u0065\u0301'), 1, 'decomposed substring: substring in the middle of string');
+    test.equal(localeIndexOf('xcaf\u00e9', 'caf\u0065\u0301'), 1, 'decomposed substring: substring at the end of string');
+    test.equal(localeIndexOf('cf\u00e9', 'caf\u0065\u0301'), -1, 'decomposed substring: no match');
+
+    test.equal(localeIndexOf('caf\u0065\u0301', 'caf\u0065\u0301'), 0, 'decomposed both: same strings');
+    test.equal(localeIndexOf('caf\u0065\u0301 x', 'caf\u0065\u0301'), 0, 'decomposed both: substring at the start of string');
+    test.equal(localeIndexOf('xcaf\u0065\u0301x', 'caf\u0065\u0301'), 1, 'decomposed both: substring in the middle of string');
+    test.equal(localeIndexOf('xcaf\u0065\u0301', 'caf\u0065\u0301'), 1, 'decomposed both: substring at the end of string');
+    test.equal(localeIndexOf('cf\u0065\u0301', 'caf\u0065\u0301'), -1, 'decomposed both: no match');
+
+    test.equal(localeIndexOf('caf\u0065\u0301', 'caf\u00e9'), 0, 'decomposed string: same strings');
+    test.equal(localeIndexOf('caf\u0065\u0301 x', 'caf\u00e9'), 0, 'decomposed string: substring at the start of string');
+    test.equal(localeIndexOf('xcaf\u0065\u0301x', 'caf\u00e9'), 1, 'decomposed string: substring in the middle of string');
+    test.equal(localeIndexOf('xcaf\u0065\u0301', 'caf\u00e9'), 1, 'decomposed string: substring at the end of string');
+    test.equal(localeIndexOf('cf\u0065\u0301', 'caf\u00e9'), -1, 'decomposed string: no match');
+
+    test.equal(localeIndexOf('\u0065\u0301\u0065\u0301caf\u0065\u0301', 'caf\u00e9'), 4, 'return string index, not grapheme index');
   });
 
   t.test('sensitivity: base', function(test) {
@@ -146,7 +170,7 @@ tape('localeIndexOf', function(t) {
   });
 
   t.test('ignorePunctuation', function(test) {
-    test.plan(10);
+    test.plan(14);
 
     const options = {ignorePunctuation: true};
 
@@ -161,14 +185,15 @@ tape('localeIndexOf', function(t) {
     test.equal(localeIndexOf('a mätchpossibly true', 'mätch possibly!!', 'de', options), 1, 'de: substring contains punctuation');
 
     test.equal(localeIndexOf('a mätch, (possibly!) true', 'mätch possibly!!', 'en', options), 1, 'en: string and substring contain punctuation');
-    test.equal(noPunctuationIndexOf.lastLength, 17, 'en: lastLength');
+    test.equal(indexOf.lastLength, 17, 'en: lastLength');
 
     test.equal(localeIndexOf('a mätch, (possibly!) true', 'mätch possibly!!', 'de', options), 1, 'de: string and substring contain punctuation');
-    test.equal(noPunctuationIndexOf.lastLength, 17, 'de: lastLength');
-  });
+    test.equal(indexOf.lastLength, 17, 'de: lastLength');
 
-  t.test('summator', function(test) {
-    test.plan(1);
-    test.equal(sum([1,2,3,4]), 10, 'summing an array of numbers');
+    test.equal(localeIndexOf('\u0065\u0301 mätch, (possibl\u0065\u0301!) true', 'mätch possibl\u00e9!!', 'de', options), 2, 'de: decomposed string and substring contain punctuation');
+    test.equal(indexOf.lastLength, 18, 'de: lastLength');
+
+    test.equal(localeIndexOf('\u0065\u0301 mätch, (possibl\u00e9!) true', 'mätch possibl\u0065\u0301!!', 'de', options), 2, 'de: string and decomposed substring contain punctuation');
+    test.equal(indexOf.lastLength, 17, 'de: lastLength');
   });
 });

@@ -128,7 +128,7 @@ The default behavior of `Intl.Collator` is to consider the whitespace punctuatio
 
 Since the length of the matched fragment can be different from the length of
 what you have looked for, this length is exposed on 
-`noPunctuationIndexOf.lastLength`.
+`indexOf.lastLength`.
 
 
 ## See also

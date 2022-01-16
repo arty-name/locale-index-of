@@ -18,87 +18,77 @@ export function prollyfill() {
 
 export function functional(Intl, string, substring, localesOrCollator, options) {
   const collator = getCollator(Intl, localesOrCollator, options);
-
-  const resolvedOptions = collator.resolvedOptions();
-  if (resolvedOptions.ignorePunctuation === false) {
-    return indexOf(collator, string, substring);
-  }
-
-  const punctuationCollator = new Intl.Collator(resolvedOptions.locale, {ignorePunctuation: true});
-  return noPunctuationIndexOf(collator, string, substring, punctuationCollator);
+  return indexOf(Intl, collator, string, substring);
 }
 
-export function indexOf(collator, string, substring) {
-  const stringLength = string.length;
-  const substringLength = substring.length;
+export function indexOf(Intl, collator, string, substring) {
+  const slicesGenerator = makeSlicesGenerator(Intl, collator, string, substring);
 
-  for (let index = 0; index <= stringLength - substringLength; index += 1) {
-    const potentialMatch = string.substring(index, index + substringLength);
-    if (collator.compare(potentialMatch, substring) === 0) {
+  for (const { slice, index } of slicesGenerator) {
+    if (collator.compare(slice, substring) === 0) {
+      indexOf.lastLength = slice.length;
       return index;
     }
   }
   return -1;
 }
 
-export function noPunctuationIndexOf(collator, string, substring, punctuationCollator) {
-  const stringLength = string.length;
-  const substringLength = substring.length;
+export function* makeSlicesGenerator(Intl, collator, string, substring) {
+  const { ignorePunctuation, locale } = collator.resolvedOptions();
 
-  // a cache for string characters punctuation values
-  const characterIsConsidered = new Array(stringLength);
+  const punctuationCollator = ignorePunctuation ?
+    new Intl.Collator(locale, { ignorePunctuation: true }) :
+    null;
 
-  function isConsidered(character) {
+  function isConsidered(grapheme) {
     // concatenation with 'a' is a workaround for Node issue
-    return (punctuationCollator.compare('a', 'a' + character) === 0) ? 0 : 1;
-  }
-  function updateConsideredCharacterAt(index) {
-    characterIsConsidered[index] = isConsidered(string[index]);
-  }
-  function consideredStringCharacters(start, count) {
-    return sum(characterIsConsidered.slice(start, start + count));
+    return punctuationCollator.compare('a', `a${grapheme}`) !== 0;
   }
 
-  let consideredSubstringCharacters = 0;
-  let index;
-
-  // count the punctuation characters in the substring, also prefill the initial portion of the cache
-  for (index = 0; index < substringLength; index += 1) {
-    consideredSubstringCharacters += isConsidered(substring[index]);
-    updateConsideredCharacterAt(index);
+  function countOfConsideredGraphemes(graphemes) {
+    const count = punctuationCollator ?
+      graphemes.filter(({ considered }) => considered).length :
+      graphemes.length;
+    return count;
   }
 
-  for (index = 0; index < stringLength; index += 1) {
-    let potentialMatchLength = consideredSubstringCharacters;
-    updateConsideredCharacterAt(index + potentialMatchLength);
+  const segmenter = Intl.Segmenter ?
+    new Intl.Segmenter(locale, { granularity: 'grapheme' }) :
+    {
+      *segment(string) {
+        const { length } = string;
+        // have to use that instead of `for segment of string` because we need index of chars, not code points
+        for (let index = 0; index < length; index += 1) {
+          const segment = string[index];
+          yield { segment, index };
+        }
+      }
+    };
 
-    // increase the length of the potential match until any of these
-    // a) it contains the same amount of considered characters as the substring
-    // b) it reaches the end of the string
-    while (
-      consideredStringCharacters(index, potentialMatchLength) < consideredSubstringCharacters &&
-      index + potentialMatchLength <= stringLength
-    ) {
-      potentialMatchLength += 1;
-      updateConsideredCharacterAt(index + potentialMatchLength);
+  const substringGraphemes = Array.from(segmenter.segment(substring));
+  const substringLength = punctuationCollator ?
+    substringGraphemes.filter(({ segment }) => isConsidered(segment)).length :
+    substringGraphemes.length;
+
+  const sliceArray = [];
+  for (const grapheme of segmenter.segment(string)) {
+    const isAlreadyFull = countOfConsideredGraphemes(sliceArray) === substringLength;
+    if (isAlreadyFull) {
+      sliceArray.shift();
     }
 
-    // now the potential match contains the same amount of considered characters as the substring
-    // and they can be compared fairly
-    const potentialMatch = string.substring(index, index + potentialMatchLength);
-    if (collator.compare(potentialMatch, substring) === 0) {
-      noPunctuationIndexOf.lastLength = potentialMatchLength;
-      return index;
+    const considered = punctuationCollator ? isConsidered(grapheme.segment) : undefined;
+    sliceArray.push({ ...grapheme, considered });
+
+    const isNotYetFull = countOfConsideredGraphemes(sliceArray) < substringLength;
+    if (isNotYetFull) {
+      continue;
     }
+
+    const slice = sliceArray.map(({ segment }) => segment).join('');
+    const index = sliceArray[0].index;
+    yield { slice, index };
   }
-
-  return -1;
-}
-
-export function sum(list) {
-  return list.reduce(function(accumulator, item) {
-    return accumulator + item;
-  }, 0);
 }
 
 export function getCollator(Intl, localesOrCollator, options) {

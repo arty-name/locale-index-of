@@ -34,41 +34,42 @@ the support for CommonJS is removed, minimal Node.js version becomes 14.
 
 ## Installation
 
-    npm install locale-index-of
+```sh
+npm install locale-index-of
+```
 
 
 ## Usage
 
-    var localeIndexOf = require('locale-index-of')(Intl);
-    localeIndexOf('a café', 'cafe', 'de', { sensitivity: 'base' }); // = 2
+```js
+import localeIndexOfMaker from 'locale-index-of';
+const localeIndexOf = localeIndexOfMaker(Intl);
+localeIndexOf('a café', 'cafe', 'de', { sensitivity: 'base' }); // = 2
+```
 
 or alternatively
 
-    require('locale-index-of').prollyfill();
-    'a café'.localeIndexOf('cafe', 'de', { sensitivity: 'base' }); // = 2
+```js
+import { prollyfill } from 'locale-index-of';
+prollyfill();
+'a café'.localeIndexOf('cafe', 'de', { sensitivity: 'base' }); // = 2
+```
     
-
-### Node.js support
-
-Please note that “official” Node.js builds from nodejs.org 
-only supported English locate in `Intl` for several major versions
-before version 13. Everything works fine with v13+. If you need that 
-in earlier versions of Node you could try the version in your distribution,
-build Node yourself or check the Node documentation for `Intl` 
-for more options.
-
 
 ## API
 
 
-### default export `require('locale-index-of')`
+### default export `localeIndexOfMaker`
 
 The default export of the module is a function. Give it the `Intl` object 
 and get the `localeIndexOf` function in return:
 
-    var localeIndexOf = require('locale-index-of')(Intl);
-  
-    
+```js
+import localeIndexOfMaker from 'locale-index-of';
+const localeIndexOf = localeIndexOfMaker(Intl);
+```
+
+
 ### `localeIndexOf(string, substring, locales, options)`
 
 It can take four parameters: where to search, what to look for,
@@ -92,7 +93,10 @@ The module also exports method `prototypeLocaleIndexOf`. Give it
 the `Intl` object and get back the `localeIndexOf` function 
 suitable for putting on `String.prototype`:
 
-    String.prototype.localeIndexOf = require('locale-index-of').prototypeLocaleIndexOf(Intl);
+```js
+import { prototypeLocaleIndexOf } from 'locale-index-of';
+String.prototype.localeIndexOf = prototypeLocaleIndexOf(Intl);
+```
 
 
 ### `prollyfill()`
@@ -124,7 +128,7 @@ The default behavior of `Intl.Collator` is to consider the whitespace punctuatio
 
 Since the length of the matched fragment can be different from the length of
 what you have looked for, this length is exposed on 
-`require('locale-index-of').noPunctuationIndexOf.lastLength`.
+`noPunctuationIndexOf.lastLength`.
 
 
 ## See also

@@ -56,11 +56,10 @@ export function* makeSlicesGenerator(Intl, collator, string, substring) {
     new Intl.Segmenter(locale, { granularity: 'grapheme' }) :
     {
       *segment(string) {
-        const { length } = string;
-        // have to use that instead of `for segment of string` because we need index of chars, not code points
-        for (let index = 0; index < length; index += 1) {
-          const segment = string[index];
+        let index = 0;
+        for (const segment of string) {
           yield { segment, index };
+          index += segment.length;
         }
       }
     };

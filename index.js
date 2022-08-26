@@ -55,7 +55,7 @@ export function* makeSlicesGenerator(Intl, collator, string, substring) {
   const segmenter = Intl.Segmenter ?
     new Intl.Segmenter(locale, { granularity: 'grapheme' }) :
     {
-      *segment(string) {
+      * segment(string) {
         let index = 0;
         for (const segment of string) {
           yield { segment, index };

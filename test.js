@@ -3,10 +3,10 @@ import exported, { prollyfill, prototypeLocaleIndexOf, indexOf } from "./index.j
 
 const localeIndexOf = exported(Intl);
 
-tape('localeIndexOf', function(t) {
+tape('localeIndexOf', (t) => {
   t.plan(10);
 
-  t.test('basic behaviour', function(test) {
+  t.test('basic behaviour', (test) => {
     test.plan(6);
     test.equal(localeIndexOf('abcä', 'abcä'), 0, 'same strings');
     test.equal(localeIndexOf('äbc', 'äb'), 0, 'substring at the start of string');
@@ -16,7 +16,7 @@ tape('localeIndexOf', function(t) {
     test.equal(localeIndexOf('äbc', 'bd'), -1, 'no match');
   });
 
-  t.test('decomposed strings', function(test) {
+  t.test('decomposed strings', (test) => {
     test.plan(16);
 
     test.equal(localeIndexOf('caf\u00e9', 'caf\u0065\u0301'), 0, 'decomposed substring: same strings');
@@ -40,10 +40,10 @@ tape('localeIndexOf', function(t) {
     test.equal(localeIndexOf('\u0065\u0301\u0065\u0301caf\u0065\u0301', 'caf\u00e9'), 4, 'return string index, not grapheme index');
   });
 
-  t.test('sensitivity: base', function(test) {
+  t.test('sensitivity: base', (test) => {
     test.plan(12);
 
-    const options = {sensitivity: 'base'};
+    const options = { sensitivity: 'base' };
 
     test.equal(localeIndexOf('here is ä for you', 'a', 'en', { sensitivity: 'variant' }), -1, 'en: no match with sensitivity: variant');
     test.equal(localeIndexOf('here is ä for you', 'a', 'de', { sensitivity: 'variant' }), -1, 'de: no match with sensitivity: variant');
@@ -64,10 +64,10 @@ tape('localeIndexOf', function(t) {
     test.equal(localeIndexOf('here is a for you', 'A', 'de', options), 8, 'de: a in the string, A in the substring');
   });
 
-  t.test('sensitivity: accent', function(test) {
+  t.test('sensitivity: accent', (test) => {
     test.plan(12);
 
-    const options = {sensitivity: 'accent'};
+    const options = { sensitivity: 'accent' };
 
     test.equal(localeIndexOf('here is ä for you', 'a', 'en', { sensitivity: 'variant' }), -1, 'no match with sensitivity: variant');
     test.equal(localeIndexOf('here is ä for you', 'a', 'de', { sensitivity: 'variant' }), -1, 'de: no match with sensitivity: variant');
@@ -88,10 +88,10 @@ tape('localeIndexOf', function(t) {
     test.equal(localeIndexOf('here is a for you', 'A', 'de', options), 8, 'de: a in the string, A in the substring');
   });
 
-  t.test('sensitivity: case', function(test) {
+  t.test('sensitivity: case', (test) => {
     test.plan(12);
 
-    const options = {sensitivity: 'case'};
+    const options = { sensitivity: 'case' };
 
     test.equal(localeIndexOf('here is ä for you', 'a', 'en', { sensitivity: 'variant' }), -1, 'no match with sensitivity: variant');
     test.equal(localeIndexOf('here is ä for you', 'a', 'de', { sensitivity: 'variant' }), -1, 'no match with sensitivity: variant');
@@ -112,10 +112,10 @@ tape('localeIndexOf', function(t) {
     test.equal(localeIndexOf('here is a for you', 'A', 'de', options), -1, 'de: a in the string, A in the substring');
   });
 
-  t.test('sensitivity: variant', function(test) {
+  t.test('sensitivity: variant', (test) => {
     test.plan(12);
 
-    const options = {sensitivity: 'variant'};
+    const options = { sensitivity: 'variant' };
 
     test.equal(localeIndexOf('here is ä for you', 'ä', 'en', options), 8, 'en: match with same letter');
     test.equal(localeIndexOf('here is ä for you', 'ä', 'de', options), 8, 'de: match with same letter');
@@ -136,17 +136,17 @@ tape('localeIndexOf', function(t) {
     test.equal(localeIndexOf('here is a for you', 'A', 'de', options), -1, 'de: a in the string, A in the substring');
   });
 
-  t.test('existing collator', function(test) {
+  t.test('existing collator', (test) => {
     test.plan(2);
 
-    const collatorEN = new Intl.Collator('en', {sensitivity: 'base', usage: 'search'});
+    const collatorEN = new Intl.Collator('en', { sensitivity: 'base', usage: 'search' });
     test.equal(localeIndexOf('here is ä for you', 'a', collatorEN), 8, 'en: ä in the string, a in the substring');
 
-    const collatorDE = new Intl.Collator('de', {sensitivity: 'base', usage: 'search'});
+    const collatorDE = new Intl.Collator('de', { sensitivity: 'base', usage: 'search' });
     test.equal(localeIndexOf('here is ä for you', 'a', collatorDE), -1, 'de: ä in the string, a in the substring');
   });
 
-  t.test('prollyfill mode', function(test) {
+  t.test('prollyfill mode', (test) => {
     test.plan(4);
 
     String.prototype.localeIndexOf = prototypeLocaleIndexOf(Intl);
@@ -154,25 +154,25 @@ tape('localeIndexOf', function(t) {
     test.equal('here is ä for you'.localeIndexOf('a', 'en', { sensitivity: 'base' }), 8, 'en: ä in the string, a in the substring');
     test.equal('here is ä for you'.localeIndexOf('a', 'de', { sensitivity: 'base' }), -1, 'de: ä in the string, a in the substring');
 
-    const collatorEN = new Intl.Collator('en', {sensitivity: 'base', usage: 'search'});
+    const collatorEN = new Intl.Collator('en', { sensitivity: 'base', usage: 'search' });
     test.equal('here is ä for you'.localeIndexOf('a', collatorEN), 8, 'en: ä in the string, a in the substring');
-    const collatorDE = new Intl.Collator('de', {sensitivity: 'base', usage: 'search'});
+    const collatorDE = new Intl.Collator('de', { sensitivity: 'base', usage: 'search' });
     test.equal('here is ä for you'.localeIndexOf('a', collatorDE), -1, 'de: ä in the string, a in the substring');
 
     delete String.prototype.localeIndexOf;
   });
 
-  t.test('prollyfill installation', function(test) {
+  t.test('prollyfill installation', (test) => {
     test.plan(1);
     prollyfill();
     test.equal('here is ä for you'.localeIndexOf('a', 'en', { sensitivity: 'base' }), 8, 'ä in the string, a in the substring');
     delete String.prototype.localeIndexOf;
   });
 
-  t.test('ignorePunctuation', function(test) {
+  t.test('ignorePunctuation', (test) => {
     test.plan(14);
 
-    const options = {ignorePunctuation: true};
+    const options = { ignorePunctuation: true };
 
     // the caveat is that whitespace is also considered punctuation
     test.equal(localeIndexOf('tes', 'e', 'en', options), 1, 'en: string contains punctuation');

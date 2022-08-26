@@ -32,7 +32,5 @@
     "url": "https://github.com/arty-name/locale-index-of"
   },
   "license": "ISC",
-  "devDependencies": {
-    "tape": "^5.1.1"
-  }
+  "devDependencies": {}
 }
